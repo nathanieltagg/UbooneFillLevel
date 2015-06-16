@@ -87,7 +87,7 @@ function FillLevel( element, options ){
   
   var settings = {
     default_look_at:    [0,0,0],
-    default_camera_distance: 1000,
+    default_camera_distance: 800,
     camera_distance_max: 8000,
     camera_distance_min: 50,
     default_theta: -0.1,

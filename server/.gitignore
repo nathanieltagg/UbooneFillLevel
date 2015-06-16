@@ -1,6 +1,0 @@
-*.root
-*.ubdaq
-*.log.?
-*.log
-*.pid
-live.config

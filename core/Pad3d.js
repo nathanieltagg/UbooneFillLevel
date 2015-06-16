@@ -82,18 +82,12 @@ function Pad3d( element, options )
   if($('canvas',this.element).length<1) {
     this.canvas = document.createElement("canvas");
     this.element.appendChild(this.canvas);
-
-    if (typeof FlashCanvas != "undefined") {
-        FlashCanvas.initElement(this.canvas);
-    }
-
   } else {
     this.canvas = $('canvas',this.element).get(0);    
   }
 
   // Build the drawing context.
   this.ctx = this.canvas.getContext('2d');
-  if(initCanvas) this.ctx = initCanvas(this.canvas).getContext('2d');
   if(!this.ctx) console.log("Problem getting context!");
   
   // Resize the canvas to the coordinates specified, either in html, the css, or options provided.
@@ -339,6 +333,21 @@ Pad3d.prototype.AddLine = function(x1,y1,z1,x2,y2,z2,width,color,source)
   this.objects.push(line);
 };
 
+Pad3d.prototype.AddSegmentedLine = function(x1,y1,z1,x2,y2,z2,nseg,width,color,source)
+{
+  var dx = x2-x1;
+  var dy = y2-y1;
+  var dz = z2-z1;
+  for(var i=0;i<nseg;i++) {
+    var f1 = i/nseg;
+    var f2 = (i+1)/nseg;
+    this.AddLine(x1+dx*f1, y1+dy*f1, z1+dz*f1,
+                 x1+dx*f2, y1+dy*f2, z1+dz*f2,
+                width,color,source);
+  }
+};
+
+
 Pad3d.prototype.AddPoint = function(x1,y1,z1,size,fill,highlightfill,source)
 {
   var obj = {
@@ -354,6 +363,25 @@ Pad3d.prototype.AddPoint = function(x1,y1,z1,size,fill,highlightfill,source)
   };
   this.objects.push(obj);
 };
+
+// Circle in the XY plane
+Pad3d.prototype.AddArcXY = function(x,y,z,r,nstep,theta_start,theta_end,width,color,source)
+{
+  var dtheta = (theta_end-theta_start)/nstep;
+  for(var i=0;i<nstep;i++) {
+    var z1 = z;
+    var z2 = z;
+    var theta1 = theta_start + i*dtheta;
+    var theta2 = theta1+dtheta;
+    var x1 = x + r*Math.cos(theta1);
+    var x2 = x + r*Math.cos(theta2);
+    var y1 = y + r*Math.sin(theta1);
+    var y2 = y + r*Math.sin(theta2);
+    this.AddLine(x1,y1,z1,x2,y2,z2,width,color,source);    
+  }
+};
+
+
 
 // Circle in the YZ plane
 Pad3d.prototype.AddArcYZ = function(x,y,z,r,nstep,theta_start,theta_end,width,color,source)
@@ -371,6 +399,26 @@ Pad3d.prototype.AddArcYZ = function(x,y,z,r,nstep,theta_start,theta_end,width,co
     this.AddLine(x1,y1,z1,x2,y2,z2,width,color,source);    
   }
 };
+
+
+// Circle in the XZ plane
+Pad3d.prototype.AddArcXZ = function(x,y,z,r,nstep,theta_start,theta_end,width,color,source)
+{
+  var dtheta = (theta_end-theta_start)/nstep;
+  for(var i=0;i<nstep;i++) {
+    var y1 = y;
+    var y2 = y;
+    var theta1 = theta_start + i*dtheta;
+    var theta2 = theta1+dtheta;
+    var x1 = x + r*Math.cos(theta1);
+    var x2 = x + r*Math.cos(theta2);
+    var z1 = z + r*Math.sin(theta1);
+    var z2 = z + r*Math.sin(theta2);
+    this.AddLine(x1,y1,z1,x2,y2,z2,width,color,source);    
+  }
+};
+
+
 
 Pad3d.prototype.AddArrow = function(x,y,z,x2,y2,z2,head_size,width,color,obj)
 {
@@ -584,6 +632,8 @@ Pad3d.prototype.DrawLines = function()
         } else {
           this.ctx.strokeStyle = obj.stroke;
         }
+        
+        this.ctx.lineWidth = linewidth;          
         
         this.ctx.beginPath();
         this.ctx.moveTo(x1,y1);
@@ -918,22 +968,25 @@ Pad3d.prototype.AnimateNextFrame = function(restart)
     this.ani_frame = 0;
     this.ani_frames_per_station = 10;
     this.ani_stations = [
-       [0,-Math.PI/2] ,
-       [0,-Math.PI/2] ,
-       [0,-Math.PI/2] ,
-       [0,0] ,
-       [0,0] ,
+       [-0.01,-Math.PI/2] ,
+       [-0.04,-Math.PI/2] ,
+       [-0.06,-Math.PI/2] ,
+       [-0.10,-Math.PI/2] ,
+       [-0.06,0] ,
+       [-0.1,0] ,
        [-Math.PI/2,0] ,
        [-Math.PI/2,0] ,
-       [0,-Math.PI/2] ,
-       [0,-Math.PI/2] ,
-       [0,Math.PI] ,
-       [0,Math.PI] ,
-       [0,Math.PI*1.5] ,
+       [-0.06,-Math.PI/2] ,
+       [-0.1,-Math.PI/2] ,
+       [-0.1,0] ,
+       [-0.06,Math.PI/2] ,
+       [-0.1,Math.PI] ,
+       [-0.06,Math.PI] ,
+       [-0.1,Math.PI*1.5] ,
        [-Math.PI/6,Math.PI*2] ,
-       [0,Math.PI*2.5] ,
-       [0,Math.PI*3] ,
-       [0,Math.PI*3.5]
+       [-0.06,Math.PI*2.5] ,
+       // [-0.06,Math.PI*3] ,
+       // [-0.06,Math.PI*3.5]
       ];    
   } 
   if(restart) {

@@ -5,13 +5,20 @@ $(function(){
   
   doTimer();
   setInterval(doTimer,10000);
+  setInterval(reload_the_page,600000);
   
   $('.trid-autorotate').click();
 });
 
 
+function reload_the_page()
+{
+  location.reload();
+}
+
 var gLevel = -100.0; // cm
 
+var lAr = "<span style='font-family:cursive;'>l</span>Ar";
 function doTimer()
 {
   // Get info
@@ -41,13 +48,25 @@ function doTimer()
       r = readout["uB_Cryo_IFIX_1_0/TE190"];
       if(r)  txt += "Bottom temp: " + r.v.toFixed(1) + "K  ";
         
-      r = readout["uB_Cryo_IFIX_1_0/LT122"];
+      r = readout["uB_Cryo_IFIX_1_0/LT122_m"];
       if(r) {
           // val is differential pressure between bottom and top in psi
           var level = -191; // bottom of the hull
-          var cm_of_ar = ((r.v-13.3)*6894.757293/100./100./9.8*1000./1.4) + 9.5*2.54;
-          gLevel = level + cm_of_ar ; // Convert to cm.
-          txt += "<br>" + "Fill: &Delta;P=" + r.v.toFixed(1) + " psi &rightarrow; " + cm_of_ar.toFixed(1) + " cm Ar";
+          var m_of_ar = r.v;
+          if(m_of_ar < 0.245) {
+            txt += "<br>" + "Filling. Less than 26 cm of "+lAr;
+          } else {
+            val cm = m_of_ar * 100;
+            txt += "<br> " + cm.toFixed(1) + " cm ";             
+            gLevel = -191 + (m_of_ar)*100. ; // Convert to level.
+            var r2 = readout["uB_Cryo_IFIX_1_0/LT122_GAL"];
+            if(r2) txt += " / " + r2.v + " gal";
+            var r2 = readout["uB_Cryo_IFIX_1_0/LT122_m3"];
+            if(r2) txt += " / " + r2.v + " m<sup>3</sup>";
+            var r2 = readout["uB_Cryo_IFIX_1_0/LT122_Ar"];
+            if(r2) txt += " / " + r2.v + " in";
+            txt += " of "+lAr;
+          }
           txt += "<br><span class='smaller'> as of " + r.d + " " +  r.t + "<span>";
       }
       $("#readings").html(txt);

@@ -23,7 +23,7 @@ function doTimer()
 {
   // Get info
   var a = $.ajax({
-    url: "get_vals.sh",
+    url: "http://ubdaq-prod-near2.fnal.gov/FillLevel/get_vals.sh",
     contentType: "text/plain",
     complete: function( jqXHR , textStatus) {
       var val = jqXHR.responseText;
@@ -60,11 +60,11 @@ function doTimer()
             txt += "<br> " + cm.toFixed(1) + " cm ";             
             gLevel = -191 + (m_of_ar)*100. ; // Convert to level.
             var r2 = readout["uB_Cryo_IFIX_1_0/LT122_GAL"];
-            if(r2) txt += " / " + r2.v + " gal";
+            if(r2) txt += " / " + r2.v.toFixed(0) + " gal";
             var r2 = readout["uB_Cryo_IFIX_1_0/LT122_m3"];
-            if(r2) txt += " / " + r2.v + " m<sup>3</sup>";
+            if(r2) txt += " / " + r2.v.toFixed(2) + " m<sup>3</sup>";
             var r2 = readout["uB_Cryo_IFIX_1_0/LT122_Ar"];
-            if(r2) txt += " / " + r2.v + " in";
+            if(r2) txt += " / " + r2.v.toFixed(1) + " in";
             txt += " of "+lAr;
           }
           txt += "<br><span class='smaller'> as of " + r.d + " " +  r.t + "<span>";

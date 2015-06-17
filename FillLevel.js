@@ -16,9 +16,9 @@ function reload_the_page()
   location.reload();
 }
 
-var gLevel = -100.0; // cm
+var gLevel = -191+2.4; // cm
 
-var lAr = "<span style='font-family:cursive;'>l</span>Ar";
+var lAr = "&#8467;Ar";
 function doTimer()
 {
   // Get info

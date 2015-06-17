@@ -56,7 +56,7 @@ function doTimer()
           if(m_of_ar < 0.245) {
             txt += "<br>" + "Filling. Less than 26 cm of "+lAr;
           } else {
-            val cm = m_of_ar * 100;
+            var cm = m_of_ar * 100;
             txt += "<br> " + cm.toFixed(1) + " cm ";             
             gLevel = -191 + (m_of_ar)*100. ; // Convert to level.
             var r2 = readout["uB_Cryo_IFIX_1_0/LT122_GAL"];
